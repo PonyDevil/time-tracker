@@ -1,0 +1,18 @@
+<%= turbo_stream.replace "project-#{@project.id}-total" do %>
+  <p class="text-green-600 font-mono mt-2" id="project-<%= @project.id %>-total">
+    <strong>Total: <%= @project.total_time_formatted %></strong>
+    <span data-controller="timer"
+          data-timer-target="display"
+          data-timer-start-time-value="<%= Time.current.to_i * 1000 %>"
+          class="ml-3 text-blue-600 font-bold">00:00</span>
+  </p>
+<% end %>
+
+<%= turbo_stream.replace "project-#{@project.id}-card .flex.gap-2" do %>
+  <%= button_to "Stop",
+        project_stop_time_entries_path(@project),
+        method: :patch,
+        form: { data: { turbo: "true" } },
+        class: "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm",
+        data: { action: "click->timer#stop" } %>
+<% end %>

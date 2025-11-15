@@ -1,0 +1,14 @@
+<%= turbo_stream.replace "project-#{@project.id}-total" do %>
+  <p class="text-green-600 font-mono mt-2" id="project-<%= @project.id %>-total">
+    <strong>Total: <%= @project.total_time_formatted %></strong>
+  </p>
+<% end %>
+
+<%= turbo_stream.replace "project-#{@project.id}-card .flex.gap-2" do %>
+  <%= button_to "Start",
+        project_start_time_entries_path(@project),
+        method: :post,
+        form: { data: { turbo: "true" } },
+        class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm",
+        data: { action: "click->timer#start" } %>
+<% end %>

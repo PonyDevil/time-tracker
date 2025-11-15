@@ -1,14 +1,17 @@
 class TimeEntriesController < ApplicationController
   def start
     @project = Project.find(params[:project_id])
-    
+
     if @project.time_entries.where(end_time: nil).exists?
-      redirect_to root_path, alert: 'Już trwa sesja!'
-      return
+      redirect_to root_path, alert: 'Już trwa sesja!' and return
     end
 
-    @project.time_entries.create!(start_time: Time.current)
-    redirect_to root_path, notice: "Start: #{@project.name}"
+    @time_entry = @project.time_entries.create!(start_time: Time.current)
+
+    respond_to do |format|
+      format.html { redirect_to root_path, notice: "Start!" }
+      format.turbo_stream
+    end
   end
 
   def stop
@@ -17,18 +20,12 @@ class TimeEntriesController < ApplicationController
 
     if @entry
       @entry.update!(end_time: Time.current)
-      redirect_to root_path, notice: "Stop! (+#{format_duration(@entry.duration)})"
+      respond_to do |format|
+        format.html { redirect_to root_path, notice: "Zatrzymano!" }
+        format.turbo_stream
+      end
     else
-      redirect_to root_path, alert: 'Brak aktywnej sesji!'
+      redirect_to root_path, alert: 'Brak aktywnej sesji!' and return
     end
-  end
-
-  private
-
-  def format_duration(seconds)
-    return "0:00" unless seconds
-    minutes = (seconds / 60).to_i
-    secs = (seconds % 60).to_i
-    "#{minutes}:#{secs.to_s.rjust(2, '0')}"
   end
 end
