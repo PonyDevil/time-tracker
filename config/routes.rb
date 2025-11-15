@@ -1,4 +1,11 @@
 Rails.application.routes.draw do
+  root 'projects#index'
+
+  resources :projects, except: [:show] do
+    post   'time_entries/start', to: 'time_entries#start', as: :start_time_entries
+    patch  'time_entries/stop',  to: 'time_entries#stop',  as: :stop_time_entries
+  end
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

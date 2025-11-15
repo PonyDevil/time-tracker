@@ -1,0 +1,51 @@
+<div class="container mx-auto p-6 max-w-4xl">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-4xl font-bold text-gray-800">Time Tracker</h1>
+    <%= link_to "Nowy projekt", new_project_path, 
+                class: "bg-blue-600 text-white px-5 py-3 rounded-lg hover:bg-blue-700 transition" %>
+  </div>
+
+  <div class="space-y-6">
+    <% @projects.each do |project| %>
+      <div class="bg-white border rounded-xl p-6 shadow-sm hover:shadow-md transition">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <h2 class="text-2xl font-semibold text-gray-800"><%= project.name %></h2>
+            <% if project.description.present? %>
+              <p class="text-gray-600 mt-1"><%= project.description %></p>
+            <% end %>
+            <p class="text-lg font-mono text-emerald-600 mt-3">
+              <strong>Total: <%= project.total_time_formatted %></strong>
+            </p>
+          </div>
+
+          <div class="flex items-center gap-2 ml-4">
+            <!-- DEBUG -->
+    <p class="text-xs text-gray-500">
+      Sesji: <%= project.time_entries.count %> |
+      Aktywna: <%= project.time_entries.where(end_time: nil).exists? ? 'TAK' : 'NIE' %>
+    </p>
+            <% if project.time_entries.where(end_time: nil).exists? %>
+              <%= button_to "Stop", project_stop_time_entries_path(project), method: :patch,
+      class: "bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 text-sm" %>
+            <% else %>
+              <%= button_to "Start", project_start_time_entries_path(project), method: :post,
+      class: "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm" %>
+              
+            <% end %>
+
+            <%= link_to "Edytuj", edit_project_path(project),
+                        class: "bg-gray-600 text-white px-3 py-2 rounded hover:bg-gray-700 text-sm" %>
+            <%= button_to "Usuń", project_path(project), method: :delete,
+                          data: { confirm: "Na pewno?" },
+                          class: "bg-gray-500 text-white px-2 py-2 rounded hover:bg-gray-600 text-xs" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @projects.empty? %>
+      <p class="text-center text-gray-500 py-12">Brak projektów. Dodaj pierwszy!</p>
+    <% end %>
+  </div>
+</div>
